@@ -36,7 +36,8 @@ jQuery(function($) {
     $(`#${action}`).click(function(el){
       const selectedAction = el.target.id;
       if (validate_action(selectedAction)) {
-        set_my_action(selectedAction)
+        myAction = selectedAction;
+        paint();
         conn.send(selectedAction);
         update_status();
       } else {
@@ -69,7 +70,7 @@ function validate_action(action){
 
 function attach_receive_handler() {
   conn.on('data', function(data) {
-    set_your_action(data);
+    yourAction = data;
     console.log('Received', data);
     update_status();
   });
@@ -78,6 +79,8 @@ function attach_receive_handler() {
 function update_status() {
   if (myAction && yourAction) {
     console.log(`${myAction}, ${yourAction}`);
+    paint();
+
     if (myAction === 'zan') {
       update_zancnt(1);
     } else if (myAction === 'sbo') {
@@ -95,26 +98,16 @@ function update_status() {
       (myScore === yourScore) ||
       (myScore + yourScore === 0)
     ) {
-      clear_actions();
+      setTimeout(clear_actions, 1200);
     } else {
-      debugger
       myScore > yourScore ? i_win() : i_lose();
     }
   }
 }
 
-function set_my_action(action){
-  myAction = action;
-  console.log("my new action", action);
-  const description = action ? actionMap[myAction] : ''
-  $('#p1Action').text(description);
-}
-
-function set_your_action(action){
-  yourAction = action;
-  console.log("your new action", action);
-  const description = action ? actionMap[yourAction] : ''
-  $('#p2Action').text(description);
+function paint(){
+  $('#p1Action').text(myAction ? actionMap[myAction] : '');
+  $('#p2Action').text(yourAction ? actionMap[yourAction] : '');
 }
 
 function update_zancnt(change){
@@ -127,8 +120,9 @@ function update_zancnt(change){
 }
 
 function clear_actions() {
-  set_my_action(null);
-  set_your_action(null);
+  myAction = null;
+  yourAction = null;
+  paint();
 }
 
 function i_win(){
