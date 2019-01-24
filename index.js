@@ -2,6 +2,7 @@ var myId, yourId, conn;
 var peer = new Peer();
 var myAction, yourAction;
 var zanCnt = 0;
+var armor = 0;
 const actions = ['zan', 'defense', 'sbo', 'mbo', 'lbo']
 const actionMap = {
   zan: '攒',
@@ -11,8 +12,8 @@ const actionMap = {
   lbo: '大波',
 }
 const actionScore = {
-  zan: -2,
-  defense: -1,
+  zan: 0,
+  defense: 0,
   sbo: 1,
   mbo: 2,
   lbo: 3,
@@ -38,7 +39,7 @@ jQuery(function($) {
       if (validate_action(selectedAction)) {
         myAction = selectedAction;
         paint();
-        conn.send(selectedAction);
+        conn.send(selectedAction, armor);
         update_status();
       } else {
         window.alert('invalid action');
@@ -69,9 +70,10 @@ function validate_action(action){
 }
 
 function attach_receive_handler() {
-  conn.on('data', function(data) {
+  conn.on('data', function(data, ac) {
     yourAction = data;
-    console.log('Received', data);
+    yourArmor = ac;
+    console.log('Received', data, ac);
     update_status();
   });
 }
@@ -91,16 +93,25 @@ function update_status() {
       update_zancnt(-3);
     }
 
-    const myScore = actionScore[myAction];
-    const yourScore = actionScore[yourAction];
-    if (
-      (myScore < 0 && yourScore < 0) ||
-      (myScore === yourScore) ||
-      (myScore + yourScore === 0)
-    ) {
-      setTimeout(clear_actions, 1200);
+    if (myAction === 'defense') {
+      update_defense(1);
+    }
+
+    const myArmor = armor;
+
+    const myScore = myArmor - actionScore[yourAction];
+    const yourScore = yourArmor - actionScore[myAction];
+
+    battle_sum(myScore);
+        
+    if(yourScore < 0 && myScore < 0) {
+      die_together();
+    } else if(yourScore >= 0 && myScore < 0) {
+      i_lose();
+    } else if(yourScore < 0 && myScore >= 0){
+      i_win();
     } else {
-      myScore > yourScore ? i_win() : i_lose();
+      setTimeout(clear_actions, 1200);
     }
   }
 }
@@ -111,12 +122,32 @@ function paint(){
 }
 
 function update_zancnt(change){
-  if (change) {
+  if (change > 0) {
+    zanCnt += change;
+  } else if (change < 0) {
     zanCnt += change;
   } else {
     zanCnt = 0;
   }
   $('#zanCnt').text(zanCnt);
+}
+
+function update_defense(change) {
+  if (change) {
+    armor += change + Math.floor(Math.random() * 2);
+  } else {
+    armor = 0;
+  }
+  $('#armor').text(armor);
+}
+
+function battle_sum(change) {
+  if (change === armor) {
+    return ;
+  } else {
+    armor = change;
+    $('#armor').text(armor);
+  }
 }
 
 function clear_actions() {
@@ -129,10 +160,19 @@ function i_win(){
   window.alert('You win!');
   clear_actions();
   update_zancnt(null);
+  update_armor(null);
 }
 
 function i_lose() {
   window.alert('You lost!');
   clear_actions();
   update_zancnt(null);
+  update_armor(null);
+}
+
+function die_together() {
+  window.alert('Perish together!')
+  clear_action();
+  update_zancnt(null);
+  update_armor(null);
 }
