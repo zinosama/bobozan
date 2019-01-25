@@ -108,7 +108,6 @@ function update_status() {
     if(myScore < 0) i_lose();
     if(yourScore < 0) i_win();
     setTimeout(clear_actions, 1200);
-    }
   }
 }
 
