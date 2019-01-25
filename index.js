@@ -104,14 +104,10 @@ function update_status() {
 
     battle_sum(myScore);
         
-    if(yourScore < 0 && myScore < 0) {
-      die_together();
-    } else if(myScore < 0) {
-      i_lose();
-    } else if(yourScore < 0){
-      i_win();
-    } else {
-      setTimeout(clear_actions, 1200);
+    if(yourScore < 0 && myScore < 0) die_together();
+    if(myScore < 0) i_lose();
+    if(yourScore < 0) i_win();
+    setTimeout(clear_actions, 1200);
     }
   }
 }
@@ -160,19 +156,19 @@ function i_win(){
   window.alert('You win!');
   clear_actions();
   update_zancnt(null);
-  update_armor(null);
+  update_defense(null);
 }
 
 function i_lose() {
   window.alert('You lost!');
   clear_actions();
   update_zancnt(null);
-  update_armor(null);
+  update_defense(null);
 }
 
 function die_together() {
   window.alert('Perish together!')
   clear_action();
   update_zancnt(null);
-  update_armor(null);
+  update_defense(null);
 }
