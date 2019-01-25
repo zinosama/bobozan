@@ -70,10 +70,10 @@ function validate_action(action){
 }
 
 function attach_receive_handler() {
-  conn.on('data', function(data, ac) {
+  conn.on('data', function(data, armorClass) {
     yourAction = data;
-    yourArmor = ac;
-    console.log('Received', data, ac);
+    yourArmor = armorClass;
+    console.log('Received', data, armorClass);
     update_status();
   });
 }
@@ -106,9 +106,9 @@ function update_status() {
         
     if(yourScore < 0 && myScore < 0) {
       die_together();
-    } else if(yourScore >= 0 && myScore < 0) {
+    } else if(myScore < 0) {
       i_lose();
-    } else if(yourScore < 0 && myScore >= 0){
+    } else if(yourScore < 0){
       i_win();
     } else {
       setTimeout(clear_actions, 1200);
