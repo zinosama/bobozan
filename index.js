@@ -13,7 +13,7 @@ const actionMap = {
   lbo: '大波',
 }
 const actionScore = {
-  zan: -2,
+  zan: 0,
   sDef: -1,
   mDef: -2,
   lDef: -3,
@@ -97,14 +97,16 @@ function update_status() {
 
     const myScore = actionScore[myAction];
     const yourScore = actionScore[yourAction];
-    if (
-      (myScore < 0 && yourScore < 0) ||
-      (myScore === yourScore) ||
-      (myScore + yourScore === 0)
-    ) {
+
+    const results = actiongScore[myAction] + actionScore[yourAction];
+    if (results <= 0) {
       setTimeout(clear_actions, 1200);
+    } else if (myScore > 0 && yourScore > 0){
+      die_together();
+    } else if (myScore > 0) {
+      i_win();
     } else {
-      myScore > yourScore ? i_win() : i_lose();
+      i_lose();
     }
   }
 }
@@ -137,6 +139,12 @@ function i_win(){
 
 function i_lose() {
   window.alert('You lost!');
+  clear_actions();
+  update_zancnt(null);
+}
+
+function die_together() {
+  windwo.alert('Perish together');
   clear_actions();
   update_zancnt(null);
 }
