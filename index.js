@@ -2,17 +2,21 @@ var myId, yourId, conn;
 var peer = new Peer();
 var myAction, yourAction;
 var zanCnt = 0;
-const actions = ['zan', 'defense', 'sbo', 'mbo', 'lbo']
+const actions = ['zan', 'sDef', 'mDef', 'lDef', 'sbo', 'mbo', 'lbo']
 const actionMap = {
   zan: '攒',
-  defense: '防',
+  sDef: '小防',
+  mDef: '中防',
+  lDef: '大防',
   sbo: '小波',
   mbo: '中波',
   lbo: '大波',
 }
 const actionScore = {
   zan: -2,
-  defense: -1,
+  sDef: -1,
+  mDef: -2,
+  lDef: -3,
   sbo: 1,
   mbo: 2,
   lbo: 3,
@@ -58,11 +62,11 @@ function init_connection(thisCon) {
 }
 
 function validate_action(action){
-  if (action === 'sbo' && zanCnt < 1) {
+  if ((action === 'sbo' || action === 'sDef') && zanCnt < 1) {
     return false
-  } else if (action == 'mbo' && zanCnt < 2) {
+  } else if ((action == 'mbo' || action === 'mDef') && zanCnt < 2) {
     return false
-  } else if (action == 'lbo' && zanCnt < 3) {
+  } else if ((action == 'lbo' || action === 'lDef') && zanCnt < 3) {
     return false
   }
   return true
@@ -83,11 +87,11 @@ function update_status() {
 
     if (myAction === 'zan') {
       update_zancnt(1);
-    } else if (myAction === 'sbo') {
+    } else if (myAction === 'sbo' || myAction === 'sDef') {
       update_zancnt(-1);
-    } else if (myAction === 'mbo') {
+    } else if (myAction === 'mbo' || myAction === 'mDef') {
       update_zancnt(-2);
-    } else if (myAction === 'lbo') {
+    } else if (myAction === 'lbo' || myAction === 'lDef') {
       update_zancnt(-3);
     }
 
